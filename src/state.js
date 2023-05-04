@@ -3,13 +3,14 @@ import Alea from 'alea'
 import { focusAtom } from 'jotai-optics'
 import { cellInfoForPos } from './utils'
 
-const canvasSize = window.innerHeight - 64
+const canvasSize = window.innerHeight - 32
+const gridSize = 64
 
 export const settingsAtom = atom({
   canvasSize,
-  size: 64,
-  cellSize: Math.floor(canvasSize / 64),
-  playerViewDistance: 64,
+  size: gridSize,
+  cellSize: Math.round(canvasSize / gridSize),
+  playerViewDistance: 100,
   foodCount: 30,
   waterCount: 30,
   wallCount: 288,
@@ -21,7 +22,7 @@ export const settingsAtom = atom({
 })
 
 export const gameStateAtom = atom({
-  state: 'INIT',
+  state: 'RUNNING',
   start: 0,
 })
 export const updateGameStateAtom = atom(null, (get, set, state) => {

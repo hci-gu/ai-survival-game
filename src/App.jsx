@@ -47,6 +47,10 @@ const Container = styled.div`
   height: 100vh;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
+
+  > canvas {
+    margin-top: 16px;
+  }
 `
 
 const Game = () => {

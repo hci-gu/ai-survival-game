@@ -9,6 +9,10 @@ const Container = styled.div`
   flex-direction: column;
 
   padding: 1rem;
+
+  span {
+    font-size: 18px;
+  }
 `
 
 const GameInfo = () => {
