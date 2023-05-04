@@ -22,17 +22,25 @@ export const settingsAtom = atom({
 })
 
 export const gameStateAtom = atom({
-  state: 'RUNNING',
+  state: 'INIT',
   start: 0,
+  sessions: 0,
 })
 export const updateGameStateAtom = atom(null, (get, set, state) => {
+  const gameState = get(gameStateAtom)
   switch (state) {
     case 'INIT':
       set(gameStateAtom, { state })
       break
     case 'RUNNING':
+      const session = gameState.sessions + 1
+      set(randomAtom, session)
       set(playerAtom, defaultPlayerState())
-      set(gameStateAtom, { state, start: Date.now() })
+      set(gameStateAtom, {
+        state,
+        start: Date.now(),
+        sessions: session,
+      })
       break
     case 'GAME_OVER':
       set(gameStateAtom, { state })
@@ -40,7 +48,10 @@ export const updateGameStateAtom = atom(null, (get, set, state) => {
   }
 })
 
-export const randomAtom = atom(() => new Alea(1))
+export const randomAtom = atom(
+  () => new Alea(1),
+  (_get, set, seed) => new Alea(seed)
+)
 
 const defaultPlayerState = () => ({
   pos: {
