@@ -10,33 +10,28 @@ const IntroductionModal = () => {
 
   return (
     <Modal opened={state === 'INIT'} onClose={() => {}} title="Introduction">
-      Welcome to this game, this is an experiment to see how well human
-      performance can stack up to AI.
+      Welcome to this survival game! Our goal is to test the performance of
+      humans versus AI. The objective is simple: survive as long as possible.
+      However, you need to keep track of your hunger and thirst levels. If
+      either one runs out, you die.
       <br></br>
       <br></br>
-      The game is a simple survival game where your goal is to survive as long
-      as possible. Whenever you move you spend hunger and thirst, if you run out
-      you die.
+      To stay alive, you must search for food and water. Once you step on green
+      food or blue water, your hunger and thirst levels will increase
+      respectively.
       <br></br>
       <br></br>
-      To survive you need to find food and water, if you walk over food (green)
-      or water(blue) you will pick it up and your hunger/thirst will fill up.
+      Please note that we will be recording
+      <ul>
+        <li>your movements</li>
+        <li>length of your game session</li>
+        <li>and if you survived the full period.</li>
+      </ul>
+      We only record your actions in the game, and nothing outside of it.
       <br></br>
       <br></br>
-      Good luck!
-      <Divider m={16} />
+      If you agree with these terms, let's get started! Good luck surviving!
       <Group position="center">
-        This game will record your actions the performance of all players. The
-        following is recorded:
-        <ul>
-          <li>- Your movements in the game</li>
-          <li>- If you managed to survive the full period</li>
-          <li>- The length of your game session</li>
-        </ul>
-        Check the box if you agree with this.
-        <br></br>
-        Nothing outside of actions in this game is recorded.
-        <br></br>
         <Group>
           <Checkbox value={accepted} onChange={() => setAccepted(!accepted)} />I
           agree
