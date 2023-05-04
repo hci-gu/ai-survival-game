@@ -55,8 +55,8 @@ export const randomAtom = atom(
 
 const defaultPlayerState = () => ({
   pos: {
-    x: 0,
-    y: 0,
+    x: Math.floor(gridSize / 2),
+    y: Math.floor(gridSize / 2),
   },
   direction: 'RIGHT',
   stats: {
@@ -94,6 +94,17 @@ export const generateWorldAtom = atom(null, (get, set, _) => {
       }
 
       cells[y][x] = { type: 'wall' }
+    }
+  }
+
+  // "punch a hole in the middle"
+  const holeSize = 3
+
+  for (let i = 0; i < holeSize; i++) {
+    for (let j = 0; j < holeSize; j++) {
+      const x = Math.floor(settings.size / 2) - Math.floor(holeSize / 2) + i
+      const y = Math.floor(settings.size / 2) - Math.floor(holeSize / 2) + j
+      cells[y][x] = { type: 'empty' }
     }
   }
 
