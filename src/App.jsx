@@ -16,6 +16,7 @@ import IntroductionModal from './components/IntroductionModal'
 import GenerateWorld from './effects/GenerateWorld'
 import GameOver from './effects/GameOver'
 import GameOverModal from './components/GameOverModal'
+import StandStillPenalty from './effects/StandStillPenalty'
 
 const Canvas = () => {
   const canvasRef = useRef()
@@ -68,6 +69,7 @@ const Game = () => {
       <Movement />
       <GenerateWorld />
       <GameOver />
+      <StandStillPenalty />
     </>
   )
 }

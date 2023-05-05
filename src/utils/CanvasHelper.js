@@ -35,10 +35,10 @@ class CanvasHelper {
             ctx.fillStyle = '#4caf50'
             ctx.beginPath()
             ctx.roundRect(
-              x * cellSize + 3,
-              y * cellSize + 3,
-              cellSize - 6,
-              cellSize - 6,
+              x * cellSize + 1,
+              y * cellSize + 1,
+              cellSize - 2,
+              cellSize - 2,
               4
             )
             ctx.fill()
@@ -46,10 +46,10 @@ class CanvasHelper {
             ctx.fillStyle = '#2196f3'
             ctx.beginPath()
             ctx.roundRect(
-              x * cellSize + 3,
-              y * cellSize + 3,
-              cellSize - 6,
-              cellSize - 6,
+              x * cellSize + 1,
+              y * cellSize + 1,
+              cellSize - 2,
+              cellSize - 2,
               4
             )
             ctx.fill()
@@ -64,28 +64,68 @@ class CanvasHelper {
     const x = pos.x * cellSize
     const y = pos.y * cellSize
     const ctx = this.context
-    ctx.beginPath()
 
+    ctx.beginPath()
     switch (direction) {
       case 'UP':
+        ctx.beginPath()
+        ctx.moveTo(x + cellSize / 2, y + cellSize + cellSize / 4)
+        ctx.lineTo(x + cellSize / 2, y + cellSize)
+        ctx.strokeStyle = '#B80C09'
+        ctx.lineWidth = 4
+        ctx.stroke()
+
+        ctx.beginPath()
         ctx.moveTo(x + cellSize / 2, y)
         ctx.lineTo(x, y + cellSize)
         ctx.lineTo(x + cellSize, y + cellSize)
+        ctx.closePath()
+        ctx.fillStyle = '#B80C09'
         break
       case 'RIGHT':
+        ctx.beginPath()
+        ctx.moveTo(x, y + cellSize / 2)
+        ctx.lineTo(x - cellSize / 4, y + cellSize / 2)
+        ctx.strokeStyle = '#B80C09'
+        ctx.lineWidth = 4
+        ctx.stroke()
+
+        ctx.beginPath()
         ctx.moveTo(x + cellSize, y + cellSize / 2)
         ctx.lineTo(x, y)
         ctx.lineTo(x, y + cellSize)
+        ctx.closePath()
+        ctx.fillStyle = '#B80C09'
         break
       case 'DOWN':
+        ctx.beginPath()
+        ctx.moveTo(x + cellSize / 2, y)
+        ctx.lineTo(x + cellSize / 2, y - cellSize / 4)
+        ctx.strokeStyle = '#B80C09'
+        ctx.lineWidth = 4
+        ctx.stroke()
+
+        ctx.beginPath()
         ctx.moveTo(x + cellSize / 2, y + cellSize)
         ctx.lineTo(x, y)
         ctx.lineTo(x + cellSize, y)
+        ctx.closePath()
+        ctx.fillStyle = '#B80C09'
         break
       case 'LEFT':
+        ctx.beginPath()
+        ctx.moveTo(x + cellSize, y + cellSize / 2)
+        ctx.lineTo(x + cellSize + cellSize / 4, y + cellSize / 2)
+        ctx.strokeStyle = '#B80C09'
+        ctx.lineWidth = 4
+        ctx.stroke()
+
+        ctx.beginPath()
         ctx.moveTo(x, y + cellSize / 2)
         ctx.lineTo(x + cellSize, y)
         ctx.lineTo(x + cellSize, y + cellSize)
+        ctx.closePath()
+        ctx.fillStyle = '#B80C09'
         break
       default:
         break
@@ -96,7 +136,10 @@ class CanvasHelper {
     ctx.fill()
   }
 
-  drawPlayerCompass(player, food, water, { cellSize, size }) {}
+  drawPlayerCompass(player, cells, { cellSize, size }) {
+    // cells with food
+    const foodCells = cells
+  }
 }
 
 export default CanvasHelper

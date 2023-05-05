@@ -3,6 +3,9 @@ import React from 'react'
 import { playerAtom, settingsAtom } from '../state'
 import ProgressBar from './ProgressBar'
 import styled from '@emotion/styled'
+import { Group, Space } from '@mantine/core'
+import { IconApple } from '@tabler/icons-react'
+import { IconBottle } from '@tabler/icons-react'
 
 const Container = styled.div`
   display: flex;
@@ -13,6 +16,15 @@ const Container = styled.div`
   span {
     font-size: 18px;
   }
+
+  > div {
+    display: flex;
+    align-items: center;
+
+    > div {
+      width: 100%;
+    }
+  }
 `
 
 const GameInfo = () => {
@@ -21,19 +33,29 @@ const GameInfo = () => {
 
   return (
     <Container>
+      <div>
+        <IconApple size={48} color="#4caf50" />
+        <ProgressBar
+          value={stats.hunger}
+          maxValue={settings.maxHunger}
+          color="#4caf50"
+        />
+      </div>
+      <Space h={16} />
+      <div>
+        <IconBottle size={48} color="#2196f3" />
+        <ProgressBar
+          value={stats.thirst}
+          maxValue={settings.maxThirst}
+          color="#2196f3"
+        />
+      </div>
       <ProgressBar
-        label="Hunger"
-        value={stats.hunger}
-        maxValue={settings.maxHunger}
-        color="#4caf50"
-      />
-      <ProgressBar
-        label="Thirst"
-        value={stats.thirst}
+        label={`Age: ${stats.age} ( reach 500 to win )`}
+        value={stats.age}
         maxValue={settings.maxThirst}
-        color="#2196f3"
+        color="#FFC857"
       />
-      <span>Age: {stats.age}</span>
     </Container>
   )
 }

@@ -7,7 +7,7 @@ const GameOver = () => {
   const setGameState = useSetAtom(updateGameStateAtom)
 
   useEffect(() => {
-    if (stats.hunger <= 0 || stats.thirst <= 0) {
+    if (stats.hunger <= 0 || stats.thirst <= 0 || stats.age >= 500) {
       setGameState('GAME_OVER')
     }
   }, [stats])

@@ -10,7 +10,7 @@ export const settingsAtom = atom({
   canvasSize,
   size: gridSize,
   cellSize: Math.round(canvasSize / gridSize),
-  playerViewDistance: 100,
+  playerViewDistance: 16,
   foodCount: 30,
   waterCount: 30,
   wallCount: 288,
@@ -99,7 +99,6 @@ export const generateWorldAtom = atom(null, (get, set, _) => {
 
   // "punch a hole in the middle"
   const holeSize = 3
-
   for (let i = 0; i < holeSize; i++) {
     for (let j = 0; j < holeSize; j++) {
       const x = Math.floor(settings.size / 2) - Math.floor(holeSize / 2) + i
@@ -179,7 +178,7 @@ export const playerMovementAtom = atom(
       direction: get(playerAtom).direction,
     }
   },
-  (get, set, key) => {
+  (get, set, direction) => {
     const { state } = get(gameStateAtom)
     if (state !== 'RUNNING') return
 
@@ -190,96 +189,65 @@ export const playerMovementAtom = atom(
     const updateObj = {
       stats: {
         ...player.stats,
-        age: player.stats.age + 1,
-        hunger: player.stats.hunger - 1,
-        thirst: player.stats.thirst - 1,
       },
     }
-
-    switch (key) {
-      case 'ArrowUp':
-        // move player forward
-        let newPos
-        switch (player.direction) {
-          case 'UP':
-            newPos = { ...player.pos, y: player.pos.y - 1 }
-            break
-          case 'RIGHT':
-            newPos = { ...player.pos, x: player.pos.x + 1 }
-            break
-          case 'DOWN':
-            newPos = { ...player.pos, y: player.pos.y + 1 }
-            break
-          case 'LEFT':
-            newPos = { ...player.pos, x: player.pos.x - 1 }
-            break
-        }
-        const [isEmpty, item] = cellInfoForPos(cells, newPos, settings.size)
-        if (isEmpty) {
-          updateObj.pos = newPos
-          if (item) {
-            if (item === 'food') {
-              updateObj.stats.hunger = Math.min(
-                player.stats.hunger + settings.reward,
-                settings.maxHunger
-              )
-            } else if (item === 'water') {
-              updateObj.stats.thirst = Math.min(
-                player.stats.thirst + settings.reward,
-                settings.maxThirst
-              )
-            }
-            set(foodAndWaterAtom, { pos: newPos, type: item })
-          }
-        } else {
-          updateObj.stats.hunger = Math.max(
-            player.stats.hunger - settings.penalty,
-            0
-          )
-          updateObj.stats.thirst = Math.max(
-            player.stats.thirst - settings.penalty,
-            0
-          )
-        }
+    let energyCost
+    let newPos
+    // calculate energyCost based on direction, turning cost energy and moving cost energy
+    switch (direction) {
+      case 'UP':
+        energyCost = player.direction === 'UP' ? 1 : 2
+        if (player.direction === 'DOWN') energyCost = 3
+        newPos = { ...player.pos, y: player.pos.y - 1 }
         break
-      case 'ArrowLeft':
-        switch (player.direction) {
-          case 'UP':
-            updateObj.direction = 'LEFT'
-            break
-          case 'RIGHT':
-            updateObj.direction = 'UP'
-            break
-          case 'DOWN':
-            updateObj.direction = 'LEFT'
-            break
-          case 'LEFT':
-            updateObj.direction = 'DOWN'
-            break
-          default:
-        }
+      case 'RIGHT':
+        energyCost = player.direction === 'RIGHT' ? 1 : 2
+        if (player.direction === 'LEFT') energyCost = 3
+        newPos = { ...player.pos, x: player.pos.x + 1 }
         break
-      case 'ArrowRight':
-        switch (player.direction) {
-          case 'UP':
-            updateObj.direction = 'RIGHT'
-            break
-          case 'RIGHT':
-            updateObj.direction = 'DOWN'
-            break
-          case 'DOWN':
-            updateObj.direction = 'RIGHT'
-            break
-          case 'LEFT':
-            updateObj.direction = 'UP'
-            break
-          default:
-        }
-      default:
+      case 'DOWN':
+        energyCost = player.direction === 'DOWN' ? 1 : 2
+        if (player.direction === 'UP') energyCost = 3
+        newPos = { ...player.pos, y: player.pos.y + 1 }
         break
+      case 'LEFT':
+        energyCost = player.direction === 'LEFT' ? 1 : 2
+        if (player.direction === 'RIGHT') energyCost = 3
+        newPos = { ...player.pos, x: player.pos.x - 1 }
     }
 
-    updateObj.age = player.age + 1
+    const [isEmpty, item] = cellInfoForPos(cells, newPos, settings.size)
+    if (isEmpty) {
+      updateObj.pos = newPos
+      if (item) {
+        if (item === 'food') {
+          updateObj.stats.hunger = Math.min(
+            player.stats.hunger + settings.reward,
+            settings.maxHunger
+          )
+        } else if (item === 'water') {
+          updateObj.stats.thirst = Math.min(
+            player.stats.thirst + settings.reward,
+            settings.maxThirst
+          )
+        }
+        set(foodAndWaterAtom, { pos: newPos, type: item })
+      }
+    } else {
+      updateObj.stats.hunger = Math.max(
+        updateObj.stats.hunger - settings.penalty,
+        0
+      )
+      updateObj.stats.thirst = Math.max(
+        updateObj.stats.thirst - settings.penalty,
+        0
+      )
+    }
+
+    updateObj.direction = direction
+    updateObj.stats.age = player.stats.age + energyCost
+    updateObj.stats.hunger = Math.max(updateObj.stats.hunger - energyCost, 0)
+    updateObj.stats.thirst = Math.max(updateObj.stats.thirst - energyCost, 0)
 
     set(playerAtom, { ...player, ...updateObj })
   }

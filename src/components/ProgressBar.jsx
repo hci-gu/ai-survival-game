@@ -6,7 +6,7 @@ const ProgressBar = ({ label, value, maxValue, color }) => {
 
   return (
     <div className="progress-bar-container">
-      <span className="progress-bar-label">{label}</span>
+      {label && <span className="progress-bar-label">{label}</span>}
       <div className="progress-bar-background">
         <div
           className="progress-bar-fill"

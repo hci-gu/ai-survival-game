@@ -4,9 +4,10 @@ import { useKey } from 'react-use'
 
 const Movement = () => {
   const movePlayer = useSetAtom(playerMovementAtom)
-  useKey('ArrowUp', () => movePlayer('ArrowUp'))
-  useKey('ArrowLeft', () => movePlayer('ArrowLeft'))
-  useKey('ArrowRight', () => movePlayer('ArrowRight'))
+  useKey('ArrowUp', () => movePlayer('UP'))
+  useKey('ArrowLeft', () => movePlayer('LEFT'))
+  useKey('ArrowRight', () => movePlayer('RIGHT'))
+  useKey('ArrowDown', () => movePlayer('DOWN'))
 
   return null
 }
