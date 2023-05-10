@@ -17,6 +17,7 @@ import GenerateWorld from './effects/GenerateWorld'
 import GameOver from './effects/GameOver'
 import GameOverModal from './components/GameOverModal'
 import StandStillPenalty from './effects/StandStillPenalty'
+import TrackGameSession from './effects/TrackGameSession'
 
 const Canvas = () => {
   const canvasRef = useRef()
@@ -24,7 +25,7 @@ const Canvas = () => {
     () => (canvasRef.current ? new CanvasHelper(canvasRef) : null),
     [canvasRef.current]
   )
-  const { state } = useAtomValue(gameStateAtom)
+  const state = useAtomValue(gameStateAtom)
   const cells = useAtomValue(worldAtom)
   const settings = useAtomValue(settingsAtom)
   const player = useAtomValue(playerMovementAtom)
@@ -70,6 +71,7 @@ const Game = () => {
       <GenerateWorld />
       <GameOver />
       <StandStillPenalty />
+      <TrackGameSession />
     </>
   )
 }

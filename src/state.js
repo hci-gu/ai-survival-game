@@ -1,10 +1,13 @@
 import { atom } from 'jotai'
+import { atomWithStorage } from 'jotai/utils'
 import Alea from 'alea'
-import { focusAtom } from 'jotai-optics'
 import { cellInfoForPos } from './utils'
 
 const canvasSize = window.innerHeight - 32
 const gridSize = 64
+
+export const playerIdAtom = atomWithStorage('playerId', null)
+export const sessionNumberAtom = atomWithStorage('sessionNumber', 0)
 
 export const settingsAtom = atom({
   canvasSize,
@@ -21,29 +24,22 @@ export const settingsAtom = atom({
   penalty: 10,
 })
 
-export const gameStateAtom = atom({
-  state: 'INIT',
-  start: 0,
-  sessions: 0,
-})
+export const gameStateAtom = atom('INIT')
+export const playerActionsAtom = atom([])
 export const updateGameStateAtom = atom(null, (get, set, state) => {
-  const gameState = get(gameStateAtom)
+  const sessionNumber = get(sessionNumberAtom)
   switch (state) {
     case 'INIT':
-      set(gameStateAtom, { state })
+      set(gameStateAtom, state)
       break
     case 'RUNNING':
-      const session = gameState.sessions + 1
-      set(randomAtom, session)
+      set(randomAtom, sessionNumber)
       set(playerAtom, defaultPlayerState())
-      set(gameStateAtom, {
-        state,
-        start: Date.now(),
-        sessions: session,
-      })
+      set(gameStateAtom, state)
       break
     case 'GAME_OVER':
-      set(gameStateAtom, { state })
+      set(sessionNumberAtom, sessionNumber + 1)
+      set(gameStateAtom, state)
       break
   }
 })
@@ -179,7 +175,7 @@ export const playerMovementAtom = atom(
     }
   },
   (get, set, direction) => {
-    const { state } = get(gameStateAtom)
+    const state = get(gameStateAtom)
     if (state !== 'RUNNING') return
 
     const player = get(playerAtom)
@@ -214,6 +210,8 @@ export const playerMovementAtom = atom(
         energyCost = player.direction === 'LEFT' ? 1 : 2
         if (player.direction === 'RIGHT') energyCost = 3
         newPos = { ...player.pos, x: player.pos.x - 1 }
+      case 'STILL':
+        energyCost = 1
     }
 
     const [isEmpty, item] = cellInfoForPos(cells, newPos, settings.size)
@@ -244,11 +242,20 @@ export const playerMovementAtom = atom(
       )
     }
 
-    updateObj.direction = direction
+    if (direction !== 'STILL') {
+      updateObj.direction = direction
+    }
     updateObj.stats.age = player.stats.age + energyCost
     updateObj.stats.hunger = Math.max(updateObj.stats.hunger - energyCost, 0)
     updateObj.stats.thirst = Math.max(updateObj.stats.thirst - energyCost, 0)
 
     set(playerAtom, { ...player, ...updateObj })
+    set(playerActionsAtom, (actions) => [
+      ...actions,
+      {
+        direction,
+        timestamp: Date.now(),
+      },
+    ])
   }
 )

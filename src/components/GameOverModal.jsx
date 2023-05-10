@@ -5,7 +5,7 @@ import { gameStateAtom, playerAtom, updateGameStateAtom } from '../state'
 import ConfettiExplosion from 'react-confetti-explosion'
 
 const GameOverModal = () => {
-  const { state } = useAtomValue(gameStateAtom)
+  const state = useAtomValue(gameStateAtom)
   const { stats } = useAtomValue(playerAtom)
   const setGameState = useSetAtom(updateGameStateAtom)
 

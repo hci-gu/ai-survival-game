@@ -1,12 +1,38 @@
 import { Button, Checkbox, Divider, Group, Modal, Space } from '@mantine/core'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import React, { useState } from 'react'
-import { gameStateAtom, updateGameStateAtom } from '../state'
+import { gameStateAtom, playerIdAtom, updateGameStateAtom } from '../state'
+import { v4 as uuidv4 } from 'uuid'
 
 const IntroductionModal = () => {
-  const { state } = useAtomValue(gameStateAtom)
+  const state = useAtomValue(gameStateAtom)
+  const [playerId, setPlayerId] = useAtom(playerIdAtom)
   const setGameState = useSetAtom(updateGameStateAtom)
   const [accepted, setAccepted] = useState(false)
+
+  const handleStart = () => {
+    setGameState('RUNNING')
+  }
+  const handleNewPlayerStart = () => {
+    setPlayerId(uuidv4())
+    setGameState('RUNNING')
+  }
+
+  if (playerId != null) {
+    return (
+      <Modal opened={state === 'INIT'} onClose={() => {}} title="Introduction">
+        Welcome back! Is it still the same person playing or do you want to
+        restart as a new player?
+        <Space h={16} />
+        <Group>
+          <Button onClick={handleStart}>Still the same person</Button>
+          <Button color="red" onClick={handleNewPlayerStart}>
+            No, start as a new player
+          </Button>
+        </Group>
+      </Modal>
+    )
+  }
 
   return (
     <Modal opened={state === 'INIT'} onClose={() => {}} title="Introduction">
@@ -39,7 +65,7 @@ const IntroductionModal = () => {
       </Group>
       <Space h={16} />
       <Group position="center">
-        <Button disabled={!accepted} onClick={() => setGameState('RUNNING')}>
+        <Button disabled={!accepted} onClick={handleNewPlayerStart}>
           Start
         </Button>
       </Group>

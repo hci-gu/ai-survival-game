@@ -3,7 +3,7 @@ import { gameStateAtom, generateWorldAtom } from '../state'
 import { useEffect } from 'react'
 
 const GenerateWorld = () => {
-  const { state } = useAtomValue(gameStateAtom)
+  const state = useAtomValue(gameStateAtom)
   const generateWorld = useSetAtom(generateWorldAtom)
 
   useEffect(() => {
