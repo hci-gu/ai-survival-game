@@ -1,12 +1,18 @@
 import { Button, Checkbox, Divider, Group, Modal, Space } from '@mantine/core'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import React, { useState } from 'react'
-import { gameStateAtom, playerIdAtom, updateGameStateAtom } from '../state'
+import {
+  gameStateAtom,
+  playerIdAtom,
+  sessionNumberAtom,
+  updateGameStateAtom,
+} from '../state'
 import { v4 as uuidv4 } from 'uuid'
 
 const IntroductionModal = () => {
   const state = useAtomValue(gameStateAtom)
   const [playerId, setPlayerId] = useAtom(playerIdAtom)
+  const setSessionNumber = useSetAtom(sessionNumberAtom)
   const setGameState = useSetAtom(updateGameStateAtom)
   const [accepted, setAccepted] = useState(false)
 
@@ -14,6 +20,7 @@ const IntroductionModal = () => {
     setGameState('RUNNING')
   }
   const handleNewPlayerStart = () => {
+    setSessionNumber(0)
     setPlayerId(uuidv4())
     setGameState('RUNNING')
   }
