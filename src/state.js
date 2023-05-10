@@ -9,7 +9,7 @@ const gridSize = 64
 export const playerIdAtom = atomWithStorage('playerId', null)
 export const sessionNumberAtom = atomWithStorage('sessionNumber', 0)
 
-export const settingsAtom = atom({
+export const settingsAtom = atomWithStorage('settings', {
   canvasSize,
   size: gridSize,
   cellSize: Math.round(canvasSize / gridSize),

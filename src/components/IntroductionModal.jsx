@@ -8,41 +8,14 @@ import {
   updateGameStateAtom,
 } from '../state'
 import { v4 as uuidv4 } from 'uuid'
+import { IconSettings } from '@tabler/icons-react'
+import SettingsModal from './SettingsModal'
 
-const IntroductionModal = () => {
-  const state = useAtomValue(gameStateAtom)
-  const [playerId, setPlayerId] = useAtom(playerIdAtom)
-  const setSessionNumber = useSetAtom(sessionNumberAtom)
-  const setGameState = useSetAtom(updateGameStateAtom)
+const FirstTimeContent = ({ callback }) => {
   const [accepted, setAccepted] = useState(false)
 
-  const handleStart = () => {
-    setGameState('RUNNING')
-  }
-  const handleNewPlayerStart = () => {
-    setSessionNumber(0)
-    setPlayerId(uuidv4())
-    setGameState('RUNNING')
-  }
-
-  if (playerId != null) {
-    return (
-      <Modal opened={state === 'INIT'} onClose={() => {}} title="Introduction">
-        Welcome back! Is it still the same person playing or do you want to
-        restart as a new player?
-        <Space h={16} />
-        <Group>
-          <Button onClick={handleStart}>Still the same person</Button>
-          <Button color="red" onClick={handleNewPlayerStart}>
-            No, start as a new player
-          </Button>
-        </Group>
-      </Modal>
-    )
-  }
-
   return (
-    <Modal opened={state === 'INIT'} onClose={() => {}} title="Introduction">
+    <>
       Welcome to this survival game! Our goal is to test the performance of
       humans versus AI. The objective is simple: survive as long as possible.
       However, you need to keep track of your hunger and thirst levels. If
@@ -72,11 +45,74 @@ const IntroductionModal = () => {
       </Group>
       <Space h={16} />
       <Group position="center">
-        <Button disabled={!accepted} onClick={handleNewPlayerStart}>
+        <Button disabled={!accepted} onClick={() => callback(true)}>
           Start
         </Button>
       </Group>
-    </Modal>
+    </>
+  )
+}
+
+const ReturningPlayerContent = ({ callback }) => {
+  return (
+    <>
+      Welcome back! Is it still the same person playing or do you want to
+      restart as a new player?
+      <Space h={16} />
+      <Group>
+        <Button onClick={() => callback(false)}>Still the same person</Button>
+        <Button color="red" onClick={() => callback(true)}>
+          No, start as a new player
+        </Button>
+      </Group>
+    </>
+  )
+}
+
+const IntroductionModal = () => {
+  const [settingsVisible, setSettingsVisible] = useState(false)
+  const state = useAtomValue(gameStateAtom)
+  const [playerId, setPlayerId] = useAtom(playerIdAtom)
+  const setSessionNumber = useSetAtom(sessionNumberAtom)
+  const setGameState = useSetAtom(updateGameStateAtom)
+
+  const handleStart = (reset = false) => {
+    if (reset) {
+      setSessionNumber(0)
+      setPlayerId(uuidv4())
+    }
+    setGameState('RUNNING')
+  }
+
+  return (
+    <>
+      <Modal.Root
+        opened={state === 'INIT'}
+        onClose={() => {}}
+        title="Introduction"
+      >
+        <Modal.Overlay />
+        <Modal.Content>
+          <Modal.Header>
+            <Modal.Title>Introduction</Modal.Title>
+            <Button variant="subtle" onClick={() => setSettingsVisible(true)}>
+              <IconSettings />
+            </Button>
+          </Modal.Header>
+          <Modal.Body>
+            {playerId != null ? (
+              <FirstTimeContent callback={handleStart} />
+            ) : (
+              <ReturningPlayerContent callback={handleStart} />
+            )}
+          </Modal.Body>
+        </Modal.Content>
+      </Modal.Root>
+      <SettingsModal
+        opened={settingsVisible}
+        close={() => setSettingsVisible(false)}
+      />
+    </>
   )
 }
 

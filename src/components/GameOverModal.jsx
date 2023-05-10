@@ -16,7 +16,7 @@ const GameOverModal = () => {
 
   return (
     <>
-      <Modal opened={state === 'GAME_OVER'} title="Game over">
+      <Modal opened={state === 'GAME_OVER'} title="Game over" centered>
         {message}
         <Space h={16} />
         <Group position="center">
