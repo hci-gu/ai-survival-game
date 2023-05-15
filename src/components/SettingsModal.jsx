@@ -44,13 +44,9 @@ const SettingsModal = ({ opened, close }) => {
         value={settings.size}
         label={'Grid size'}
         onChange={(value) => {
-          const canvasSize = window.innerHeight - 32
-
           setSettings((settings) => ({
             ...settings,
             size: value,
-            canvasSize,
-            cellSize: Math.round(canvasSize / value),
           }))
         }}
       />

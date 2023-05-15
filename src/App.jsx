@@ -35,13 +35,9 @@ const Canvas = () => {
     canvasHelper?.draw(cells, player, settings)
   }, [canvasHelper, cells, player, settings])
 
-  return (
-    <canvas
-      ref={canvasRef}
-      width={settings.canvasSize}
-      height={settings.canvasSize}
-    />
-  )
+  const size = Math.min(window.innerHeight, window.innerWidth) - 32
+
+  return <canvas ref={canvasRef} width={size} height={size} />
 }
 
 const Container = styled.div`
@@ -49,6 +45,7 @@ const Container = styled.div`
   height: 100vh;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
+  ${({ singleColumn }) => singleColumn && 'grid-template-columns: 1fr;'}
 
   > canvas {
     margin-top: 16px;
@@ -56,9 +53,11 @@ const Container = styled.div`
 `
 
 const Game = () => {
+  const singleColumn = window.innerWidth <= window.innerHeight
+
   return (
     <>
-      <Container>
+      <Container singleColumn={singleColumn}>
         <div></div>
         <Canvas />
         <GameInfo />

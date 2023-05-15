@@ -3,16 +3,11 @@ import { atomWithStorage } from 'jotai/utils'
 import Alea from 'alea'
 import { cellInfoForPos } from './utils'
 
-const canvasSize = window.innerHeight - 32
-const gridSize = 64
-
 export const playerIdAtom = atomWithStorage('playerId', null)
 export const sessionNumberAtom = atomWithStorage('sessionNumber', 0)
 
 export const settingsAtom = atomWithStorage('settings', {
-  canvasSize,
-  size: gridSize,
-  cellSize: Math.round(canvasSize / gridSize),
+  size: 64,
   playerViewDistance: 16,
   foodCount: 30,
   waterCount: 30,
@@ -28,13 +23,15 @@ export const gameStateAtom = atom('INIT')
 export const playerActionsAtom = atom([])
 export const updateGameStateAtom = atom(null, (get, set, state) => {
   const sessionNumber = get(sessionNumberAtom)
+  const prng = get(randomAtom)
+  const settings = get(settingsAtom)
   switch (state) {
     case 'INIT':
       set(gameStateAtom, state)
       break
     case 'RUNNING':
       set(randomAtom, sessionNumber)
-      set(playerAtom, defaultPlayerState())
+      set(playerAtom, defaultPlayerState(settings, prng))
       set(gameStateAtom, state)
       break
     case 'GAME_OVER':
@@ -49,10 +46,27 @@ export const randomAtom = atom(
   (_get, set, seed) => new Alea(seed)
 )
 
-const defaultPlayerState = () => ({
+const defaultPlayerState = ({ size }, prng) => {
+  const x = Math.floor(prng() * size)
+  const y = Math.floor(prng() * size)
+
+  return {
+    pos: {
+      x,
+      y,
+    },
+    direction: 'RIGHT',
+    stats: {
+      age: 0,
+      hunger: 150,
+      thirst: 150,
+    },
+  }
+}
+export const playerAtom = atom({
   pos: {
-    x: Math.floor(gridSize / 2),
-    y: Math.floor(gridSize / 2),
+    x: 0,
+    y: 0,
   },
   direction: 'RIGHT',
   stats: {
@@ -61,11 +75,11 @@ const defaultPlayerState = () => ({
     thirst: 150,
   },
 })
-export const playerAtom = atom(defaultPlayerState())
 
 export const worldAtom = atom([[]])
 
 export const generateWorldAtom = atom(null, (get, set, _) => {
+  const playerPos = get(playerAtom).pos
   const prng = get(randomAtom)
   const settings = get(settingsAtom)
   const cells = Array.from({ length: settings.size }, () =>
@@ -93,12 +107,13 @@ export const generateWorldAtom = atom(null, (get, set, _) => {
     }
   }
 
-  // "punch a hole in the middle"
+  // "punch a hole around the player"
   const holeSize = 3
   for (let i = 0; i < holeSize; i++) {
     for (let j = 0; j < holeSize; j++) {
-      const x = Math.floor(settings.size / 2) - Math.floor(holeSize / 2) + i
-      const y = Math.floor(settings.size / 2) - Math.floor(holeSize / 2) + j
+      const x = playerPos.x - Math.floor(holeSize / 2) + i
+      const y = playerPos.y - Math.floor(holeSize / 2) + j
+      if (x < 0 || x >= settings.size || y < 0 || y >= settings.size) continue
       cells[y][x] = { type: 'empty' }
     }
   }
@@ -109,7 +124,7 @@ export const generateWorldAtom = atom(null, (get, set, _) => {
     do {
       x = Math.floor(prng() * settings.size)
       y = Math.floor(prng() * settings.size)
-    } while (!cellInfoForPos(cells, { x, y }, settings.size)[0])
+    } while (!cellInfoForPos(cells, { x, y }, settings.size, playerPos)[0])
 
     cells[y][x] = { item: 'food', type: 'empty' }
   }
@@ -119,7 +134,7 @@ export const generateWorldAtom = atom(null, (get, set, _) => {
     do {
       x = Math.floor(prng() * settings.size)
       y = Math.floor(prng() * settings.size)
-    } while (!cellInfoForPos(cells, { x, y }, settings.size)[0])
+    } while (!cellInfoForPos(cells, { x, y }, settings.size, playerPos)[0])
 
     cells[y][x] = { item: 'water', type: 'empty' }
   }

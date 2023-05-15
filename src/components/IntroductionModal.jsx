@@ -100,7 +100,7 @@ const IntroductionModal = () => {
             </Button>
           </Modal.Header>
           <Modal.Body>
-            {playerId != null ? (
+            {playerId == null ? (
               <FirstTimeContent callback={handleStart} />
             ) : (
               <ReturningPlayerContent callback={handleStart} />
