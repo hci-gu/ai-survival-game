@@ -181,6 +181,7 @@ class CanvasHelper {
             y,
             normalizedDirection,
             distance,
+            intensity: 1 / (distance * distance),
           })
         }
       }
@@ -197,12 +198,14 @@ class CanvasHelper {
     }
 
     let weightedAverageDirection = { x: 0, y: 0 }
+    let totalIntensity = 0
     for (let i = 0; i < cellsWithFood.length; i++) {
-      const weight = cellsWithFood[i].distance / totalDistance
+      const weight = cellsWithFood[i].intensity
+      totalIntensity += weight
       weightedAverageDirection.x +=
-        cellsWithFood[i].normalizedDirection.x / weight
+        cellsWithFood[i].normalizedDirection.x * weight
       weightedAverageDirection.y +=
-        cellsWithFood[i].normalizedDirection.y / weight
+        cellsWithFood[i].normalizedDirection.y * weight
     }
 
     // normalize the weighted average direction
@@ -219,12 +222,16 @@ class CanvasHelper {
 
     ctx.fillStyle = color
     ctx.strokeStyle = color
+    // set opacity based on total intensity
+    // ctx.globalAlpha = Math.min(1, totalIntensity / 2)
     this.canvas_arrow(
       player.pos.x * cellSize + cellSize / 2,
       player.pos.y * cellSize + cellSize / 2,
       x + weightedAverageDirection.x * cellSize * 2,
       y + weightedAverageDirection.y * cellSize * 2
     )
+    // ctx.globalAlpha = 1
+    // ctx.scale(1 / arrowScale, 1 / arrowScale)
   }
 
   canvas_arrow(fromx, fromy, tox, toy, r = 8) {
