@@ -1,7 +1,7 @@
 import React from 'react'
 import './ProgressBar.css'
 
-const ProgressBar = ({ label, value, maxValue, color }) => {
+const ProgressBar = ({ label, value, intensity, maxValue, color }) => {
   const percentage = (value / maxValue) * 100
 
   return (
@@ -11,6 +11,16 @@ const ProgressBar = ({ label, value, maxValue, color }) => {
         <div
           className="progress-bar-fill"
           style={{ width: `${percentage}%`, backgroundColor: color }}
+        ></div>
+      </div>
+
+      <div
+        className="progress-bar-background"
+        style={{ height: 8, marginTop: '0.5rem' }}
+      >
+        <div
+          className="progress-bar-fill"
+          style={{ width: `${intensity * 100}%`, backgroundColor: color }}
         ></div>
       </div>
     </div>

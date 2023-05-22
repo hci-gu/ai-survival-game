@@ -1,11 +1,11 @@
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
+import { useAtomValue, useSetAtom } from 'jotai'
 import { gameStateAtom, playerAtom, playerMovementAtom } from '../state'
 
 const StandStillPenalty = () => {
   const { state } = useAtomValue(gameStateAtom)
   const movePlayer = useSetAtom(playerMovementAtom)
-  const [{ pos }, set] = useAtom(playerAtom)
+  const { pos } = useAtomValue(playerAtom)
 
   useEffect(() => {
     if (state !== 'RUNNING') return

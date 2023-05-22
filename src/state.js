@@ -274,3 +274,28 @@ export const playerMovementAtom = atom(
     ])
   }
 )
+
+export const intensityAtom = atom((get) => {
+  const player = get(playerAtom)
+  const { food, water } = get(foodAndWaterAtom)
+
+  const foodIntensity = food.reduce((acc, { x, y }) => {
+    const distance = Math.sqrt(
+      (player.pos.x - x) * (player.pos.x - x) +
+        (player.pos.y - y) * (player.pos.y - y)
+    )
+    return acc + 1 / (distance * distance)
+  }, 0)
+  const waterIntensity = water.reduce((acc, { x, y }) => {
+    const distance = Math.sqrt(
+      (player.pos.x - x) * (player.pos.x - x) +
+        (player.pos.y - y) * (player.pos.y - y)
+    )
+    return acc + 1 / (distance * distance)
+  }, 0)
+
+  return {
+    food: Math.max(1, foodIntensity),
+    water: Math.max(1, waterIntensity),
+  }
+})

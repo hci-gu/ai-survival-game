@@ -1,6 +1,6 @@
 import { useAtomValue } from 'jotai'
 import React from 'react'
-import { playerAtom, settingsAtom } from '../state'
+import { intensityAtom, playerAtom, settingsAtom } from '../state'
 import ProgressBar from './ProgressBar'
 import styled from '@emotion/styled'
 import { Group, Space } from '@mantine/core'
@@ -29,6 +29,7 @@ const Container = styled.div`
 
 const GameInfo = () => {
   const { stats } = useAtomValue(playerAtom)
+  const { food, water } = useAtomValue(intensityAtom)
   const settings = useAtomValue(settingsAtom)
 
   return (
@@ -38,6 +39,7 @@ const GameInfo = () => {
         <ProgressBar
           value={stats.hunger}
           maxValue={settings.maxHunger}
+          intensity={food}
           color="#4caf50"
         />
       </div>
@@ -47,6 +49,7 @@ const GameInfo = () => {
         <ProgressBar
           value={stats.thirst}
           maxValue={settings.maxThirst}
+          intensity={water}
           color="#2196f3"
         />
       </div>
