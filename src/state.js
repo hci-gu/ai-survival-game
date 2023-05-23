@@ -9,8 +9,8 @@ export const sessionNumberAtom = atomWithStorage('sessionNumber', 0)
 export const settingsAtom = atomWithStorage('settings', {
   size: 64,
   playerViewDistance: 16,
-  foodCount: 30,
-  waterCount: 30,
+  foodCount: 20,
+  waterCount: 20,
   wallCount: 288,
   maxAge: 500,
   maxHunger: 500,
@@ -295,7 +295,7 @@ export const intensityAtom = atom((get) => {
   }, 0)
 
   return {
-    food: Math.max(1, foodIntensity),
-    water: Math.max(1, waterIntensity),
+    food: Math.min(1, foodIntensity),
+    water: Math.min(1, waterIntensity),
   }
 })
