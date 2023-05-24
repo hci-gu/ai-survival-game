@@ -76,6 +76,11 @@ const IntroductionModal = () => {
   const setSessionNumber = useSetAtom(sessionNumberAtom)
   const setGameState = useSetAtom(updateGameStateAtom)
 
+  const handleNewPlayer = () => {
+    setPlayerId(null)
+    setSessionNumber(0)
+  }
+
   const handleStart = (reset = false) => {
     if (reset) {
       setSessionNumber(0)
@@ -103,7 +108,15 @@ const IntroductionModal = () => {
             {playerId == null ? (
               <FirstTimeContent callback={handleStart} />
             ) : (
-              <ReturningPlayerContent callback={handleStart} />
+              <ReturningPlayerContent
+                callback={(isNewPlayer) => {
+                  if (isNewPlayer) {
+                    handleNewPlayer()
+                  } else {
+                    handleStart(false)
+                  }
+                }}
+              />
             )}
           </Modal.Body>
         </Modal.Content>
