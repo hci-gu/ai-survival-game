@@ -27,7 +27,7 @@ const Stat = ({ title, value, asPercent }) => {
 }
 
 const Stats = ({ title, sessions }) => {
-  const averageSessionLength =
+  const averageSessionAge =
     sessions.reduce((acc, session) => acc + session.stats.age, 0) /
     sessions.length
   const averageSuccessRate =
@@ -35,16 +35,33 @@ const Stats = ({ title, sessions }) => {
       (acc, session) => acc + (session.stats.age >= 500 ? 1 : 0),
       0
     ) / sessions.length
+  const sessionsWithActions = sessions.filter(
+    (session) => session.playerActions.length > 0
+  )
+  const averageSessionTime =
+    sessionsWithActions.reduce((acc, session) => {
+      const firstAction = session.playerActions[0]
+      const lastAction = session.playerActions[session.playerActions.length - 1]
+      const sessionTime = lastAction.timestamp - firstAction.timestamp
+      return acc + sessionTime
+    }, 0) /
+    sessionsWithActions.length /
+    1000
+
   return (
     <>
       <Text fw={700} fz="xl" mt="lg">
         {title}
       </Text>
-      <SimpleGrid cols={3}>
+      <SimpleGrid cols={4}>
         <Stat title="Sessions" value={sessions.length} />
         <Stat
           title="Average session age"
-          value={averageSessionLength.toFixed(1)}
+          value={averageSessionAge.toFixed(1)}
+        />
+        <Stat
+          title="Average session time ( seconds )"
+          value={averageSessionTime.toFixed(1)}
         />
         <Stat
           title="Average success rate"
