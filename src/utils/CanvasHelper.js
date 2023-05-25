@@ -188,18 +188,9 @@ class CanvasHelper {
     }
 
     // calculate average direction with distance weighting
-    let longestDistance = 0
-    for (let i = 0; i < cellsWithFood.length; i++) {
-      totalDistance += cellsWithFood[i].distance
-      if (cellsWithFood[i].distance > longestDistance) {
-        longestDistance = cellsWithFood[i].distance
-      }
-    }
-
     let weightedAverageDirection = { x: 0, y: 0 }
     for (let i = 0; i < cellsWithFood.length; i++) {
       const weight = cellsWithFood[i].intensity
-      totalIntensity += weight
       weightedAverageDirection.x +=
         cellsWithFood[i].normalizedDirection.x * weight
       weightedAverageDirection.y +=
