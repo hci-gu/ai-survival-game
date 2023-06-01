@@ -1,7 +1,18 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from '@emotion/styled'
 import * as analytics from './utils/analytics'
 import { Grid, Group, Paper, SimpleGrid, Text } from '@mantine/core'
+import {
+  BarChart,
+  Bar,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts'
 
 const Container = styled.div`
   margin: 1rem auto;
@@ -49,6 +60,17 @@ const SimpleStat = ({ title, value, asPercent }) => {
   )
 }
 
+const Bars = ({ values }) => {
+  console.log('Bars', values)
+  return (
+    <ResponsiveContainer width={'100%'} height={100}>
+      <BarChart width={150} height={40} data={values}>
+        <Bar dataKey="value" fill="#8884d8" />
+      </BarChart>
+    </ResponsiveContainer>
+  )
+}
+
 function standardDeviation(values) {
   const n = values.length
   const mean = values.reduce((a, b) => a + b, 0) / n
@@ -86,6 +108,13 @@ const Stats = ({ title, sessions }) => {
           value={averageSuccessRate}
           asPercent
         />
+        <div></div>
+        <Paper withBorder p="md" radius="md" key={title}>
+          <Bars values={sessionAges.map((value) => ({ value }))} />
+        </Paper>
+        <Paper withBorder p="md" radius="md" key={title}>
+          <Bars values={sessionTimes.map((value) => ({ value }))} />
+        </Paper>
       </SimpleGrid>
     </>
   )
