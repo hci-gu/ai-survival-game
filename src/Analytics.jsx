@@ -9,7 +9,30 @@ const Container = styled.div`
   height: 100%;
 `
 
-const Stat = ({ title, value, asPercent }) => {
+const Stat = ({ title, values }) => {
+  const average = values.reduce((acc, value) => acc + value, 0) / values.length
+  const stdDev = standardDeviation(values)
+
+  return (
+    <Paper withBorder p="md" radius="md" key={title}>
+      <Group position="apart">
+        <div>
+          <Text c="dimmed" tt="uppercase" fw={700} fz="xs">
+            {title}
+          </Text>
+          <Text fw={700} fz="xl">
+            {average.toFixed(1)}
+          </Text>
+          <Text fw={200} fz="m">
+            std dev: {stdDev.toFixed(1)}
+          </Text>
+        </div>
+      </Group>
+    </Paper>
+  )
+}
+
+const SimpleStat = ({ title, value, asPercent }) => {
   return (
     <Paper withBorder p="md" radius="md" key={title}>
       <Group position="apart">
@@ -26,27 +49,28 @@ const Stat = ({ title, value, asPercent }) => {
   )
 }
 
+function standardDeviation(values) {
+  const n = values.length
+  const mean = values.reduce((a, b) => a + b, 0) / n
+  const differences = values.map((v) => v - mean)
+  const sqDifferences = differences.map((d) => d * d)
+  const meanSqDifference = sqDifferences.reduce((a, b) => a + b, 0) / n
+  return Math.sqrt(meanSqDifference)
+}
+
 const Stats = ({ title, sessions }) => {
-  const averageSessionAge =
-    sessions.reduce((acc, session) => acc + session.stats.age, 0) /
-    sessions.length
+  const sessionAges = sessions.map((session) => session.stats.age)
+  const sessionTimes = sessions.map((session) => {
+    const firstAction = session.playerActions[0]
+    const lastAction = session.playerActions[session.playerActions.length - 1]
+    return (lastAction.timestamp - firstAction.timestamp) / 1000
+  })
+
   const averageSuccessRate =
     sessions.reduce(
       (acc, session) => acc + (session.stats.age >= 500 ? 1 : 0),
       0
     ) / sessions.length
-  const sessionsWithActions = sessions.filter(
-    (session) => session.playerActions.length > 0
-  )
-  const averageSessionTime =
-    sessionsWithActions.reduce((acc, session) => {
-      const firstAction = session.playerActions[0]
-      const lastAction = session.playerActions[session.playerActions.length - 1]
-      const sessionTime = lastAction.timestamp - firstAction.timestamp
-      return acc + sessionTime
-    }, 0) /
-    sessionsWithActions.length /
-    1000
 
   return (
     <>
@@ -54,16 +78,10 @@ const Stats = ({ title, sessions }) => {
         {title}
       </Text>
       <SimpleGrid cols={4}>
-        <Stat title="Sessions" value={sessions.length} />
-        <Stat
-          title="Average session age"
-          value={averageSessionAge.toFixed(1)}
-        />
-        <Stat
-          title="Average session time ( seconds )"
-          value={averageSessionTime.toFixed(1)}
-        />
-        <Stat
+        <SimpleStat title="Sessions" value={sessions.length} />
+        <Stat title="Average session age" values={sessionAges} />
+        <Stat title="Average session time ( seconds )" values={sessionTimes} />
+        <SimpleStat
           title="Average success rate"
           value={averageSuccessRate}
           asPercent
@@ -102,8 +120,6 @@ const Analytics = () => {
     }
     return acc
   }, {})
-
-  console.log(players)
 
   return (
     <Container>

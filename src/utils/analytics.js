@@ -31,7 +31,22 @@ export const useSessions = () => {
   const [sessions, setSessions] = useState([])
 
   useEffect(() => {
-    getSessions().then((sessions) => setSessions(sessions))
+    getSessions().then((sessions) =>
+      setSessions(
+        sessions
+          .filter((session) => session.playerActions.length > 0)
+          .map((session) => {
+            const firstAction = session.playerActions[0]
+            const lastAction =
+              session.playerActions[session.playerActions.length - 1]
+            return {
+              ...session,
+              duration: (lastAction.timestamp - firstAction.timestamp) / 1000,
+            }
+          })
+          .filter((session) => session.duration < 2000)
+      )
+    )
   }, [])
 
   return sessions
